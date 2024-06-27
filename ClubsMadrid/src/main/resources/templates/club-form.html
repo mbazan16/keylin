@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title th:text="#{app.title}"></title>
+</head>
+<body>
+<h1 th:text="#{app.title}"></h1>
+<h2 th:text="#{list.clubs.title}"></h2>
+
+
+<section class="create_clubs">
+    <h2 th:text="#{create.club.title}"></h2>
+      <form th:action="@{/submit-club}" th:object="${club}" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" th:field="*{name}" required/><br/>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" th:field="*{description}" required/><br/>
+
+        <label for="created_On">Created on:</label>
+        <input type="date" id="created_On" th:field="*{created_On}" required/><br/>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" th:field="*{city}" required/><br/>
+
+        <label for="cathegory">Cathegory:</label>
+        <select id="cathegory" th:field="*{cathegory}">
+            <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+        </select><br/>
+
+        <button type="submit">Submit</button>
+    </form>
+</section>
+
+</body>
+</html>
