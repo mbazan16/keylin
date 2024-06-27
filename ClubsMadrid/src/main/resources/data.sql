@@ -1,3 +1,2 @@
-INSERT INTO Club (name, description, created_On, city, cathegory) VALUES 
-('Music Club', 'Club for music lovers', '2023-01-01', 'Madrid', 'MUSIC'),
-('Technology Club', 'Club for tech enthusiasts', '2023-02-01', 'Barcelona', 'TECHNOLOGY');
+INSERT INTO club (name, description, created_on, city, cathegory) VALUES ('Club A', 'Description A', '2023-06-01', 'CityA', 'SPORTS');
+INSERT INTO club (name, description, created_on, city, cathegory) VALUES ('Club B', 'Description B', '2023-06-02', 'CityB', 'SOCIAL');

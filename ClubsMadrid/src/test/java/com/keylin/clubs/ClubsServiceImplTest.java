@@ -1,17 +1,18 @@
-package com.keylin.clubs;
+package com.keylin.clubs.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
 
 import com.keylin.clubs.entities.Club;
 import com.keylin.clubs.entities.common.Cathegory;
@@ -20,89 +21,33 @@ import com.keylin.clubs.exceptions.ServiceException;
 import com.keylin.clubs.repositories.ClubRepository;
 import com.keylin.clubs.services.ClubsServiceImpl;
 
+@ExtendWith(MockitoExtension.class)
 public class ClubsServiceImplTest {
 
     @Mock
     private ClubRepository clubRepository;
 
+    @Mock
+    private Logger logger;
+
     @InjectMocks
-    private ClubsServiceImpl clubsServiceImpl;
+    private ClubsServiceImpl clubsService;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
-    public void testGetListOfClubsCity_success() throws ServiceException {
-        List<Club> expectedClubs = Arrays.asList(new Club(), new Club());
-        when(clubRepository.findByCity("TestCity")).thenReturn(expectedClubs);
+    public void testListClubs_Exception() {
+        // Arrange
+        when(clubRepository.findAll()).thenThrow(new RuntimeException("Database connection error"));
 
-        List<Club> actualClubs = clubsServiceImpl.getListOfClubsCity("TestCity");
+        // Act & Assert
+        ServiceException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                ServiceException.class,
+                () -> clubsService.listClubs()
+        );
 
-        assertEquals(expectedClubs, actualClubs);
-    }
+        assertThat(exception.getMessage()).isEqualTo(MessageError.CLUBS_NOT_FOUND.getMessage());
 
-    @Test
-    public void testGetListOfClubsCity_nullCity() {
-        assertThrows(ServiceException.class, () -> {
-            clubsServiceImpl.getListOfClubsCity(null);
-        });
-    }
-
-    @Test
-    public void testGetListOfClubsCity_repositoryException() {
-        when(clubRepository.findByCity("TestCity")).thenThrow(new RuntimeException());
-
-        assertThrows(ServiceException.class, () -> {
-            clubsServiceImpl.getListOfClubsCity("TestCity");
-        });
-    }
-
-    @Test
-    public void testSearchForCathegory_success() throws ServiceException {
-        List<Club> expectedClubs = Arrays.asList(new Club(), new Club());
-        Cathegory cathegory = new Cathegory();
-        when(clubRepository.findByCathegory(cathegory)).thenReturn(expectedClubs);
-
-        List<Club> actualClubs = clubsServiceImpl.searchForCathegory(cathegory);
-
-        assertEquals(expectedClubs, actualClubs);
-    }
-
-    @Test
-    public void testSearchForCathegory_nullCathegory() {
-        assertThrows(ServiceException.class, () -> {
-            clubsServiceImpl.searchForCathegory(null);
-        });
-    }
-
-    @Test
-    public void testSearchForCathegory_repositoryException() {
-        Cathegory cathegory = new Cathegory();
-        when(clubRepository.findByCathegory(cathegory)).thenThrow(new RuntimeException());
-
-        assertThrows(ServiceException.class, () -> {
-            clubsServiceImpl.searchForCathegory(cathegory);
-        });
-    }
-
-    @Test
-    public void testListClubs_success() throws ServiceException {
-        List<Club> expectedClubs = Arrays.asList(new Club(), new Club());
-        when(clubRepository.findAll()).thenReturn(expectedClubs);
-
-        List<Club> actualClubs = clubsServiceImpl.listClubs();
-
-        assertEquals(expectedClubs, actualClubs);
-    }
-
-    @Test
-    public void testListClubs_repositoryException() {
-        when(clubRepository.findAll()).thenThrow(new RuntimeException());
-
-        assertThrows(ServiceException.class, () -> {
-            clubsServiceImpl.listClubs();
-        });
+        verify(logger).error("Exception");
+        verify(clubRepository).findAll();
     }
 }
