@@ -22,7 +22,7 @@ import com.keylin.clubs.services.ClubsServiceImpl;
 public class ClubController {
 	
 	//Logger
-    private static final Logger log = LoggerFactory.getLogger(ClubsServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ClubController.class);
 	
     //Injection of the repository to use the business methods and connect 
 	@Autowired
